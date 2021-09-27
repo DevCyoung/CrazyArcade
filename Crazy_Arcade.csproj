@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D7176385-CE4E-4A75-9F6D-DCF408B46566}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Crazy_Arcade</RootNamespace>
+    <AssemblyName>Crazy_Arcade</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Managers\Animation.cs" />
+    <Compile Include="Managers\Boom.cs" />
+    <Compile Include="Managers\Charactor.cs" />
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Managers\CollideManager.cs" />
+    <Compile Include="Managers\Manager.cs" />
+    <Compile Include="Managers\Map.cs" />
+    <Compile Include="Managers\MapManager.cs" />
+    <Compile Include="Managers\WaterBoom.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziDownIdle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziDownWalk_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziDownWalk_2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziDownWalk_3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziDownWalk_4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziLeftIdle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziLeftWalk_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziLeftWalk_2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziLeftWalk_3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziLeftWalk_4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziRightIdle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziRightWalk_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziRightWalk_2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziRightWalk_3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziRightWalk_4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziUpIdle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziUpWalk_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziUpWalk_2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziUpWalk_3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BazziUpWalk_4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\Charactor\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\AudioSource\Patrit.wav" />
+    <Content Include="Resources\Box\Box_01.png" />
+    <Content Include="Resources\Box\Box_02.png" />
+    <Content Include="Resources\Box\Object1_2.png" />
+    <Content Include="Resources\Box\Object2_2.png" />
+    <Content Include="Resources\Box\Raw.png" />
+    <Content Include="Resources\Box\sandBox.png" />
+    <Content Include="Resources\Box\Tile2.png" />
+    <Content Include="Resources\Box\Tile4.png" />
+    <Content Include="Resources\Box\Tile6.png" />
+    <Content Include="Resources\WaterBoom\boomDown_1.png" />
+    <Content Include="Resources\WaterBoom\boomDown_2.png" />
+    <Content Include="Resources\WaterBoom\boomDown_3.png" />
+    <Content Include="Resources\WaterBoom\boomDown_4.png" />
+    <Content Include="Resources\WaterBoom\boomDown_5.png" />
+    <Content Include="Resources\WaterBoom\boomLeft_1.png" />
+    <Content Include="Resources\WaterBoom\boomLeft_2.png" />
+    <Content Include="Resources\WaterBoom\boomLeft_3.png" />
+    <Content Include="Resources\WaterBoom\boomLeft_4.png" />
+    <Content Include="Resources\WaterBoom\boomLeft_5.png" />
+    <Content Include="Resources\WaterBoom\boomRight_1.png" />
+    <Content Include="Resources\WaterBoom\boomRight_2.png" />
+    <Content Include="Resources\WaterBoom\boomRight_3.png" />
+    <Content Include="Resources\WaterBoom\boomRight_4.png" />
+    <Content Include="Resources\WaterBoom\boomRight_5.png" />
+    <Content Include="Resources\WaterBoom\boomUp_1.png" />
+    <Content Include="Resources\WaterBoom\boomUp_2.png" />
+    <Content Include="Resources\WaterBoom\boomUp_3.png" />
+    <Content Include="Resources\WaterBoom\boomUp_4.png" />
+    <Content Include="Resources\WaterBoom\boomUp_5.png" />
+    <Content Include="Resources\WaterBoom\colorbubble1.png" />
+    <Content Include="Resources\WaterBoom\colorbubble2.png" />
+    <Content Include="Resources\WaterBoom\colorbubble3.png" />
+    <None Include="Resources\Tile01.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

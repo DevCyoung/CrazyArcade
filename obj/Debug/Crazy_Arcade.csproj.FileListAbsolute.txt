@@ -1,0 +1,10 @@
+C:\Users\tkdlq\source\repos\Crazy_Arcade\bin\Debug\Crazy_Arcade.exe.config
+C:\Users\tkdlq\source\repos\Crazy_Arcade\bin\Debug\Crazy_Arcade.exe
+C:\Users\tkdlq\source\repos\Crazy_Arcade\bin\Debug\Crazy_Arcade.pdb
+C:\Users\tkdlq\source\repos\Crazy_Arcade\obj\Debug\Crazy_Arcade.csprojAssemblyReference.cache
+C:\Users\tkdlq\source\repos\Crazy_Arcade\obj\Debug\Crazy_Arcade.Properties.Resources.resources
+C:\Users\tkdlq\source\repos\Crazy_Arcade\obj\Debug\Crazy_Arcade.csproj.GenerateResource.cache
+C:\Users\tkdlq\source\repos\Crazy_Arcade\obj\Debug\Crazy_Arcade.csproj.CoreCompileInputs.cache
+C:\Users\tkdlq\source\repos\Crazy_Arcade\obj\Debug\Crazy_Arcade.exe
+C:\Users\tkdlq\source\repos\Crazy_Arcade\obj\Debug\Crazy_Arcade.pdb
+C:\Users\tkdlq\source\repos\Crazy_Arcade\obj\Debug\Crazy_Arcade.MainForm.resources
