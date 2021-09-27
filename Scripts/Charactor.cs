@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 using Crazy_Arcade.Managers;
+using Crazy_Arcade.Helper;
 
 
 
@@ -58,16 +59,20 @@ namespace Crazy_Arcade
         //INFO
         public Map map;
 
-
-        public Point position;
+        //Status
+        int speed = 2;
+        int power = 2;
 
         //Input
         bool[] inputKeys  = new bool[4];
         bool inputSpace   = false;
         bool anyInput = false;
-        DIRECTION playerDir = DIRECTION.DOWN;
-        Rectangle dirRect;
 
+        //Collide
+        Rectangle dirCollide;
+        public Rectangle collider;
+        DIRECTION playerDir = DIRECTION.DOWN;
+        public Point position;
         
         //Boom 
         public WaterBoom[] booms = new WaterBoom[100];
@@ -83,14 +88,14 @@ namespace Crazy_Arcade
 
         public Charactor( Map map)
         {
+            this.map            = map;
 
-            
-            this.map    = map;
+            //position
+            position = new Point(map.BlockCollides[12, 13].X, map.BlockCollides[12, 13].Y - 15);
+            collider            = new Rectangle(position.X, position.Y + 15, 40, 38);
+            dirCollide          = new Rectangle();
 
-            curAnim     = down;
-            dirRect     = new Rectangle();
-            position    = new Point(40 * 12, 39 * 12 + 1);
-
+            curAnim             = down;
             animations[(int)DIRECTION.LEFT]  = left;
             animations[(int)DIRECTION.UP]    = up;
             animations[(int)DIRECTION.RIGHT] = right;
@@ -119,13 +124,13 @@ namespace Crazy_Arcade
             int height = curAnim[sprIndex].Height;
             e.DrawImage(curAnim[sprIndex] , position.X, position.Y -10 , width, height);
 
-            //Draw CharactorRect
-            if (Manager.DrawCollider )
-                e.DrawRectangle(new Pen(Color.Red,2), new Rectangle(position.X, position.Y + 15, 40, 38) );
+            //Draw CharactorCollide
+            if ( Manager.DrawCollider )
+                e.DrawRectangle(new Pen(Color.Red,2), collider );
 
             //Draw dirRect
             if(  Manager.DrawCollider )
-                e.DrawRectangle(new Pen(Color.Blue, 2), dirRect );
+                e.DrawRectangle(new Pen(Color.Blue, 2), dirCollide );
 
         }
 
@@ -158,42 +163,40 @@ namespace Crazy_Arcade
 
             if ( Keys.Space == e.KeyCode && inputSpace == false )
             {
+
                 inputSpace = true;
-                Rectangle[,] mapRects = map.Rects;
+
+                Rectangle[,] BlockCollides = map.BlockCollides;
                 Rectangle destRect = new Rectangle();
-                Rectangle boomrect = new Rectangle(position.X, position.Y + 15, 46, 42);
-                Point TilePos = new Point(0, 0);
-
-                WaterBoom curBoom = new WaterBoom(this);
+                Point destPosition = new Point();
                 double result = double.MaxValue;
-                curBoom.active = true;
 
+                // 물풍선을 놓을수있는곳을 탐색
                 for (int y = 0; y < Map.SIZEY; y++)
                 {
                     for (int x = 0; x < Map.SIZEX; x++)
                     {
-                        Rectangle rect = mapRects[y, x];
-                        double TilepointX = rect.X + Map.BLOCK_INTER / 2;
-                        double TilepointY = rect.Y + Map.BLOCK_INTER / 2;
+                        if (map.iBlocks[y, x] != (int)BLOCK.NONE)
+                            continue;
 
-                        double boompointX = boomrect.X + Map.BLOCK_INTER / 2;
-                        double boompointY = boomrect.Y + Map.BLOCK_INTER / 2;
-
-                        double distance = Math.Pow(TilepointX - boompointX, 2) + Math.Pow(TilepointY - boompointY, 2);
-                        distance = Math.Sqrt(distance);
-
+                        double distance = MathHelper.CollideDistance(collider, BlockCollides[y, x]);                        
                         if (distance < result)
                         {
-                            result = distance;
-                            destRect = rect;
-                            TilePos = new Point(x, y);
+                            result          = distance;
+                            destRect        = BlockCollides[y, x];
+                            destPosition    = new Point(x, y);
                         }
-
                     }
                 }
 
-                curBoom.rect = destRect;
-                curBoom.tilePos = TilePos;
+                if (WaterBoom.BoomArray[destPosition.Y, destPosition.X] == 1)
+                    return;
+
+
+
+                WaterBoom curBoom = new WaterBoom(this , destRect , destPosition , power);
+                WaterBoom.BoomArray[destPosition.Y, destPosition.X] = 1;
+                curBoom.active = true;
                 booms[boomIndex] = curBoom;
                 ++boomIndex;
                 if (boomIndex > 99)
@@ -227,7 +230,6 @@ namespace Crazy_Arcade
             
 
         }
-
         public void AnimUpdate(int deltaTime)
         {
 
@@ -253,63 +255,54 @@ namespace Crazy_Arcade
         public void MoveUpdate(int deltaTime)
         {
 
-
+            //DirRect Updat
             int[] nx    = {-1 ,  0 , 1 , 0};
             int[] ny    = { 0 , -1 , 0 , 1};
             int[] dirX  = { 0, 15, 25, 15 };
             int[] dirY  = { 25, 15, 25, 40 };
 
-            int tickMove = 8;
-            bool isCollide = false;
-
-            dirRect = new Rectangle(position.X + dirX[(int)playerDir] + nx[(int)playerDir] * 5,
+            dirCollide = new Rectangle(position.X + dirX[(int)playerDir] + nx[(int)playerDir] * 5,
                                     position.Y + dirY[(int)playerDir] + ny[(int)playerDir] * 5,
                                     15, 15);
 
+            bool isCollide = false;
+            int tickMove = 8;
 
-
-            //Box 충돌 체크 
+            //박스 충돌 체크 
             for (int y = 0; y < Map.SIZEY; y++)
             {
                 for (int x = 0; x < Map.SIZEX; x++)
                 {
 
-                    if (map.iBlocks[y, x] == 0)
+                    if (map.iBlocks[y, x] == (int)BLOCK.NONE )
                         continue;
-
-                    if ( CollideCheck(dirRect, map.BlockCollides[y, x]) )
-                        isCollide = true;  
-                    
+                    if ( MathHelper.IsCollide( dirCollide, map.BlockCollides[y, x]) )
+                        isCollide = true;
                 }
             }
 
-            //Boom 충돌 체크
+            //폭탄 충돌 체크
             for (int i = 0; i < 100; i++)
             {
-
                 if (booms[i] == null)
                     break;
-
-                if (booms[i].playerExit == false || booms[i].active == false || booms[i].isTrigger == true)
+                if (booms[i].isTrigger == true)
                     continue;
-
-                if (CollideCheck(dirRect, booms[i].rect))
+                if (MathHelper.IsCollide(dirCollide, booms[i].collide ) )
                     isCollide = true;
-
             }
-
-            //물폭탄 터진 충돌 체크
-
 
             if (isCollide)
                 return;
 
+            //Position Update
             for (int i = 0; i < 4; i++)
             {
                 if (playerDir == (DIRECTION)i && inputKeys[i])
                 {
                     position.X += tickMove * nx[i];
                     position.Y += tickMove * ny[i];
+                    collider    = new Rectangle(position.X, position.Y + 15, 38, 38);
                     break;
                 }
             }
@@ -319,7 +312,9 @@ namespace Crazy_Arcade
         
         public void InputUpdate(int deltatime = 1)
         {
+
             anyInput = false;
+
             for (int i = 0; i < 4; i++)
             {
                 if (inputKeys[i])
@@ -327,15 +322,8 @@ namespace Crazy_Arcade
             }
         }
 
-        public bool CollideCheck(Rectangle r1 , Rectangle r2 )
-        {
-            bool check = false;
 
-            if (r1.Left < r2.Right && r1.Right > r2.Left && r1.Top < r2.Bottom && r1.Bottom > r2.Top)
-                check = true;
-            return check;
-        }
-    
+       
 
     }
 

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
+using Crazy_Arcade.Helper;
+using System.Windows.Forms;
 
 namespace Crazy_Arcade.Managers
 {
@@ -18,24 +16,7 @@ namespace Crazy_Arcade.Managers
     class WaterBoom
     {
 
-        public bool active = false;
-        public bool isTrigger = false;
-
-        int index = 0;
-        int waterIndex = 0;
-
-        int animDelay = 0;
-        int boomDelay = 0;
-        int waterDelay = 0;
-        int power = 5;
-
-        public Rectangle rect;
-        public Point tilePos;
-        public Charactor ch;
-
-        public bool playerExit = false;
-        public bool oneShot = false ;
-
+        #region SPR_ANIMATION
 
         readonly Image[] bubleLeft ={
             Properties.Resources.boomLeft_1,
@@ -75,54 +56,66 @@ namespace Crazy_Arcade.Managers
             Properties.Resources.colorbubble3,
             Properties.Resources.colorbubble2,
         };
+        #endregion SPR_ANIMATION
 
-        Image curImage;
+        public bool active = false;
+        public bool isTrigger = true;
+
+        int index = 0;
+        int waterIndex = 0;
+
+        int animDelay = 0;
+        int boomDelay = 0;
+        int waterDelay = 0;
+
+        int power;
+
+        public Rectangle collide;
+        public Point position;
+
+        public Charactor player;
+
+        
+        public bool isShoot = false ;
+        public int[] curPower;
+
+        
         Image[][] animations;
-        public WaterBoom(Charactor ch)
+
+        public static int[,] BoomArray = new int[Map.SIZEY,Map.SIZEX];
+
+        public WaterBoom(Charactor player ,Rectangle collide , Point poosition , int power)
         {
-            curImage = bublesIdle[index];
-            rect = new Rectangle();
 
-            this.ch = ch;
-            animations = new Image[4][];
+            this.player     = player;
+            this.collide    = collide;
+            this.position   = poosition;
+            this.power      = power;
 
-            animations[0] = bubleRight;
-            animations[1] = bubleLeft;
-            animations[2] = bubleDown;
-            animations[3] = bubleUp;
+            animations      = new Image[4][];
+            animations[0]   = bubleRight;
+            animations[1]   = bubleLeft;
+            animations[2]   = bubleDown;
+            animations[3]   = bubleUp;
 
-
-
+            
+            curPower = new int[4] { power, power, power, power };
         }
+
 
         public void Update(Graphics e , int deltatime )
         {
 
-            
-
             if (active == false)
                 return;
-
-            //밖으로 나갔는지 검사 수정
-            if (playerExit == false )
+            if (waterIndex > 4)
             {
-
-                Rectangle pr = new Rectangle(ch.position.X, ch.position.Y + 15, 40, 40);
-                Rectangle br = rect;
-
-                double TilepointX = pr.X + Map.BLOCK_INTER / 2;
-                double TilepointY = pr.Y + Map.BLOCK_INTER / 2;
-
-                double boompointX = br.X + Map.BLOCK_INTER / 2;
-                double boompointY = br.Y + Map.BLOCK_INTER / 2;
-
-                double distance = Math.Pow(TilepointX - boompointX, 2) + Math.Pow(TilepointY - boompointY, 2);
-                distance = Math.Sqrt(distance);
-
-                if ( distance > 25)
-                    playerExit = true;
-
+                active = false;
+                WaterBoom.BoomArray[position.Y, position.X] = 0;
             }
+            if ( isTrigger )
+                if (MathHelper.CollideDistance(player.collider, collide) > 25)
+                    isTrigger = false;
 
             animDelay += deltatime;
             boomDelay += deltatime;
@@ -137,20 +130,22 @@ namespace Crazy_Arcade.Managers
                 index = 0;
 
             if ( Manager.DrawCollider )
-                e.DrawRectangle(new Pen(Color.White), rect);
+                e.DrawRectangle(new Pen(Color.White,2), collide);
 
-            if ( oneShot == false )
-                e.DrawImage(bublesIdle[index], rect);
+            if ( isShoot == false )
+                e.DrawImage(bublesIdle[index], collide);
 
-
-            // 폭발!
-            if (boomDelay >= 150 && boomDelay <= 180 )
+            //Boom
+            if (boomDelay >= 150 )
             {
-                isTrigger = true;
-              
-                // Right , Left , Up , Down
+
+                //       Right , Left , Up , Down
                 int[] nx = { 1, -1, 0, 0 };
                 int[] ny = { 0, 0, 1, -1 };
+
+                isTrigger = true;
+                isShoot = true;
+               
                 waterDelay += deltatime;
 
                 if (waterDelay > 3)
@@ -158,218 +153,48 @@ namespace Crazy_Arcade.Managers
                     ++waterIndex;
                     waterDelay = 0;
                 }
-
-
-
-
-                bool[] checking = new bool[4];
-                for (int i = 0; i < 4; i++)
-                {
-                    for (int j = 0; j < power; j++)
-                    {
-                        //if (checking[i] == true)
-                        //    break;
-
-                        int nnx = nx[i] * j + tilePos.X;
-                        int nny = ny[i] * j + tilePos.Y;
-
-                        if (nny >= 13 || nny < 0 || nnx >= 15 || nnx < 0)
-                            continue;
-                        if (waterIndex > 4)
-                            continue;
-                        Image image = animations[i][waterIndex];
-
-                        if (ch.map.iBlocks[nny, nnx] != 0)
-                        {
-                            checking[i] = true;
-                            break;
-                        }
-                        
-
-                        e.DrawRectangle(new Pen(Color.Violet , 2),  ch.map.Rects[nny , nnx ]);
-                        e.DrawImage(image, ch.map.Rects[nny, nnx]);
-                    }
-
-
-                }
-
-                checking = new bool[4];
-                if (oneShot == false)
-                {
-                    oneShot = true;
-                    for (int i = 0; i < 4; i++)
-                    {
-                        for (int j = 0; j < power; j++)
-                        {
-
-                            if (checking[i] == true)
-                                break;
-
-                            int nnx = nx[i] * j + tilePos.X;
-                            int nny = ny[i] * j + tilePos.Y;
-
-                            if (nny >= 13 || nny < 0 || nnx >= 15 || nnx < 0)
-                                continue;
-
-
-
-                            if (ch.map.iBlocks[nny, nnx] != 0)
-                            {
-                                ch.map.iBlocks[nny, nnx] = 0;
-                                checking[i] = true;
-                            }
-
-
-
-                        }
-
-
-                    }
-
-
-                }
-
                 
-            }
-            
-
-
-            if (boomDelay >= 152)
-            {
-                isTrigger = true;
-            }
-
-
-
-
-        }
-
-        int animationDelay = 0;
-        int BoomDelay = 0;
-        public enum BoomState
-        {
-            NONE,
-            IDLE,
-            BOOM,
-            BOOMING,
-        }
-
-        public BoomState state = BoomState.NONE;
-        public void Draw(Graphics e, int deltatime )
-        {
-
-            if ( state == BoomState.NONE )
-                return;
-
-            //밖으로 나갔는지 검사 수정
-            if (playerExit == false)
-            {
-
-                Rectangle pr = new Rectangle(ch.position.X, ch.position.Y + 15, 40, 40);
-                Rectangle br = rect;
-
-                double TilepointX = pr.X + Map.BLOCK_INTER / 2;
-                double TilepointY = pr.Y + Map.BLOCK_INTER / 2;
-
-                double boompointX = br.X + Map.BLOCK_INTER / 2;
-                double boompointY = br.Y + Map.BLOCK_INTER / 2;
-
-                double distance = Math.Pow(TilepointX - boompointX, 2) + Math.Pow(TilepointY - boompointY, 2);
-                distance = Math.Sqrt(distance);
-
-                if (distance > 25)
-                    playerExit = true;
-
-            }
-
-            animDelay += deltatime;
-            boomDelay += deltatime;
-
-            if (animDelay > 6)
-            {
-                ++index;
-                animDelay = 0;
-            }
-
-            if (index > 3)
-                index = 0;
-
-            if (Manager.DrawCollider)
-                e.DrawRectangle(new Pen(Color.White), rect);
-
-            if (state == BoomState.IDLE)
-            {
-                e.DrawImage(bublesIdle[index], rect);
-            }
-            else if (state == BoomState.BOOM)
-            {
-                state = BoomState.BOOMING;
-                isTrigger = true;
-           
-            }
-            else if ( state == BoomState.BOOMING)
-            {
-
-                int[] nx = { 1, -1, 0, 0 };
-                int[] ny = { 0, 0, 1, -1 };
-                bool[] check = new bool[4];
-                waterDelay += deltatime;
-
-                if (waterDelay > 3)
-                {
-                    ++waterIndex;
-                    waterDelay = 0;
-                }
-
                 for (int i = 0; i < 4; i++)
                 {
-                    for (int j = 0; j < power; j++)
+                    for (int j = 0; j < curPower[i]; j++)
                     {
-                        int nnx = nx[i] * j + tilePos.X;
-                        int nny = ny[i] * j + tilePos.Y;
-                        
+                        int nnx = nx[i] * j + position.X;
+                        int nny = ny[i] * j + position.Y;
 
-                        if (nny >= 13 || nny < 0 || nnx >= 15 || nnx < 0)
-                            continue;
-                        if (waterIndex > 4)
-                            continue;
+                        if (nny >= Map.SIZEY || nny < 0 || nnx >= Map.SIZEX || nnx < 0)
+                            break;
 
-                        e.DrawRectangle(new Pen(Color.Violet, 2), ch.map.Rects[nny, nnx]);
-                        e.DrawImage(animations[i][waterIndex], ch.map.Rects[nny, nnx]);
-
-                        // 여기까지 물폭탄
-                        if (ch.map.iBlocks[nny, nnx] != 0)
+                        //캐릭터와 충돌하는가?
+                        if ( MathHelper.IsCollide(player.map.BlockCollides[nny, nnx] ,  player.collider ) )
                         {
-                            ch.map.iBlocks[nny, nnx] = 0;
-                            check[i] = true;
+                            //Die
+                            //MessageBox.Show("죽었습니다!.");
+
+                        }
+
+
+                        if (waterIndex > 4)
+                            break;
+                        if (player.map.iBlocks[nny, nnx] == (int)BLOCK.RAW || player.map.iBlocks[nny, nnx] == (int)BLOCK.WALL)
+                            break;
+
+                        Image bublleSprite = animations[i][waterIndex];
+                        e.DrawRectangle(new Pen(Color.Aqua , 2), player.map.BlockCollides[nny, nnx]);
+                        e.DrawImage(bublleSprite, player.map.BlockCollides[nny, nnx]);
+
+                        if (player.map.iBlocks[nny, nnx] != (int)BLOCK.NONE )
+                        {
+                            player.map.iBlocks[nny, nnx] = (int)BLOCK.NONE;
+                            curPower[i] = j+1;
                             break;
                         }
 
-                        
-
                     }
-
-
                 }
 
-                
-                
 
             }
+
         }
-
-
-
-            
-
-        
-
-
-
-
-
-
-
-
     }
 }

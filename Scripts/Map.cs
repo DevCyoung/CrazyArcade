@@ -30,73 +30,48 @@ namespace Crazy_Arcade
     class Map
     {
        
-        public const int SIZEX = 15;
-        public const int SIZEY = 13;
+        public const int SIZEX = 17;
+        public const int SIZEY = 15;
 
         public const int TILE_INTER  = 39;
         public const int BLOCK_INTER = 40;
 
+        public const int PIVOTX = 250;
+        public const int PIVOTY = 130;
+
         public int[,] iBlocks;
-        public int[,] iItems;
-
         public Rectangle[,] BlockCollides;
-        public Rectangle[,] ItemCollides;
-
-        public Rectangle[,] Rects;
-
-    
 
         public  Map()
         {
            
             BlockCollides  = new Rectangle[SIZEY, SIZEX];
-            Rects = new Rectangle[SIZEY, SIZEX];
-
+     
             //Block Designe
             iBlocks  = new int[SIZEY, SIZEX]
             {
-                { 1,  1 , 1 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 1 , 1 , 1},      // 1
-                { 1,  2 , 1 , 0 , 3 , 3 , 3 , 1 , 3 , 3 , 3 , 0 , 1 , 2 , 1},      // 2
-                { 1,  1 , 0 , 3 , 0 , 1 , 0 , 3 , 0 , 1 , 0 , 3 , 0 , 1 , 1},      // 3
-                { 1,  0 , 3 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 3 , 0 , 0},      // 4
-                { 1,  0 , 3 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 3 , 0 , 0},      // 5
-                { 1,  0 , 3 , 0 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 3 , 0 , 0},      // 6
-                { 1,  0 , 3 , 1 , 1 , 1 , 4 , 4 , 4 , 1 , 1 , 1 , 3 , 0 , 0},      // 7
-                { 1,  1 , 0 , 3 , 0 , 1 , 1 , 1 , 1 , 1 , 0 , 3 , 0 , 1 , 1},      // 8
-                { 1,  1 , 1 , 0 , 3 , 1 , 1 , 1 , 1 , 1 , 3 , 0 , 1 , 1 , 1},      // 9
-                { 1,  1 , 1 , 1 , 0 , 3 , 0 , 1 , 0 , 3 , 0 , 1 , 1 , 1 , 1},      // 10
-                { 1,  1 , 0 , 1 , 1 , 0 , 3 , 3 , 3 , 0 , 1 , 1 , 0 , 1 , 1},      // 11
-                { 1,  2 , 0 , 1 , 1 , 1 , 0 , 0 , 0 , 1 , 1 , 1 , 0 , 2 , 1},      // 12
-                { 1,  0 , 0 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 1},      // 13
+                {4,  4,  4 , 4,  4 , 4,  4 , 4,  4 , 4,  4 , 4,  4 , 4,  4 , 4,  4},      // 0
+                {4,  1,  1 , 1 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 1 , 1 , 1,  4},      // 1
+                {4,  1,  2 , 1 , 0 , 3 , 3 , 3 , 1 , 3 , 3 , 3 , 0 , 1 , 2 , 1,  4},      // 2
+                {4,  1,  1 , 0 , 3 , 0 , 1 , 0 , 3 , 0 , 1 , 0 , 3 , 0 , 1 , 1,  4},      // 3
+                {4,  1,  0 , 3 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 3 , 0 , 0,  4},      // 4
+                {4,  1,  0 , 3 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 3 , 0 , 0,  4},      // 5
+                {4,  1,  0 , 3 , 0 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 3 , 0 , 0,  4},      // 6
+                {4,  1,  0 , 3 , 1 , 1 , 1 , 4 , 4 , 4 , 1 , 1 , 1 , 3 , 0 , 0,  4},      // 7
+                {4,  1,  1 , 0 , 3 , 0 , 1 , 1 , 1 , 1 , 1 , 0 , 3 , 0 , 1 , 1,  4},      // 8
+                {4,  1,  1 , 1 , 0 , 3 , 1 , 1 , 1 , 1 , 1 , 3 , 0 , 1 , 1 , 1,  4},      // 9
+                {4,  1,  1 , 1 , 1 , 0 , 3 , 0 , 1 , 0 , 3 , 0 , 1 , 1 , 1 , 1,  4},      // 10
+                {4,  1,  1 , 0 , 1 , 1 , 0 , 3 , 3 , 3 , 0 , 1 , 1 , 0 , 1 , 1,  4},      // 11
+                {4,  1,  2 , 0 , 1 , 1 , 1 , 0 , 0 , 0 , 1 , 1 , 1 , 0 , 2 , 1,  4},      // 12
+                {4,  1,  0 , 0 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 1,  4},      // 13
+                {4,  4,  4 , 4,  4 , 4,  4 , 4,  4 , 4,  4 , 4,  4 , 4,  4 , 4,  4},      // 14
             };
 
             
             for (int y = 0; y < SIZEY; y++)
-            {
                 for (int x = 0; x < SIZEX; x++)
-                {
-
-                    // 블럭이 존재할때만 체크합니다.
-                    if (iBlocks[y, x] == (int)BLOCK.NONE)
-                    {
-                        BlockCollides[y, x] = new Rectangle(99999999, 999999999, BLOCK_INTER, BLOCK_INTER);
-                    }
-                    else
-                    {
-                        BlockCollides[y, x] = new Rectangle(x * BLOCK_INTER, y * BLOCK_INTER, BLOCK_INTER, BLOCK_INTER);
-                    }
-
-                    Rects[y, x] = new Rectangle(x * BLOCK_INTER, y * BLOCK_INTER, BLOCK_INTER, BLOCK_INTER);
-                }
-            }
-
-
-            //아이템을 만든다.
-            //랜덤으로 섞는다 
-            
-
-            
-
+                    BlockCollides[y, x] = new Rectangle(PIVOTX + x * BLOCK_INTER, PIVOTY + y * BLOCK_INTER, BLOCK_INTER, BLOCK_INTER);
+             
         }
 
 
@@ -105,14 +80,14 @@ namespace Crazy_Arcade
             int cnt = 0;
 
             // Draw Tiles
-            for (int y = 0; y < SIZEY; y++)
+            for (int y = 1; y < SIZEY - 1; y++)
             {
-                for (int x = 0; x < SIZEX; x++)
+                for (int x = 1; x < SIZEX - 1; x++)
                 {
                     if (cnt % 2 == 0 )
-                        e.DrawImage(Properties.Resources.Tile2, new Point(x * TILE_INTER, y * TILE_INTER));
+                        e.DrawImage(Properties.Resources.Tile2, new Point(PIVOTX+x * TILE_INTER, PIVOTY+y * TILE_INTER));
                     else
-                        e.DrawImage(Properties.Resources.Tile4, new Point(x * TILE_INTER, y * TILE_INTER));
+                        e.DrawImage(Properties.Resources.Tile4, new Point(PIVOTX + x * TILE_INTER, PIVOTY + y * TILE_INTER));
                     ++cnt;
                 }
             }
@@ -141,9 +116,13 @@ namespace Crazy_Arcade
                     if ( blockSprite != null )
                         e.DrawImage(blockSprite, BlockCollides[y, x]);
 
-                    //Draw Rect
-                    if (iBlocks[y, x] != (int)BLOCK.NONE && Manager.DrawCollider )
+                    //Draw BlockCollides
+                    if (iBlocks[y, x] == (int)BLOCK.WALL || iBlocks[y, x] == (int)BLOCK.RAW  && Manager.DrawCollider)
+                        e.DrawRectangle(new Pen(Color.Yellow, 2), BlockCollides[y, x]);
+                    else if (iBlocks[y, x] != (int)BLOCK.NONE && Manager.DrawCollider )
                         e.DrawRectangle(new Pen(Color.Green,2), BlockCollides[y,x] );
+
+
                 }
             }
 
@@ -162,7 +141,6 @@ namespace Crazy_Arcade
 
         }
 
-      
 
     }
 

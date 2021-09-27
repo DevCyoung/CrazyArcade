@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Scripts\Managers\Manager.cs" />
     <Compile Include="Scripts\Map.cs" />
+    <Compile Include="Scripts\Define\MathHelper.cs" />
     <Compile Include="Scripts\WaterBoom.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -146,7 +147,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Charactor\" />
-    <Folder Include="Scripts\Define\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AudioSource\Patrit.wav" />
