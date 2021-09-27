@@ -28,10 +28,6 @@ namespace Crazy_Arcade
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             this.SetStyle(ControlStyles.UserPaint, true);
 
-            //DoubleBuffered = true;
-
-            
-
         }
 
 
@@ -40,16 +36,12 @@ namespace Crazy_Arcade
         {
 
             Invalidate();
-            map    = new Map(this);
-            player = new Charactor(this , map);
+
+            map    = new Map();
+            player = new Charactor(map);
+            
+
             GameTimer.Enabled = true;
-
-
-
-
-
-
-
         }
 
 
@@ -64,10 +56,6 @@ namespace Crazy_Arcade
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             player.InputKeyDown(e);
-
-            //if ( e.KeyCode == Keys.Enter)
-            //    MessageBox.Show($"X : { player.position.X }   Y : { player.position.Y } ");
-
         }
 
         private void MainForm_KeyUp(object sender, KeyEventArgs e)
@@ -83,42 +71,29 @@ namespace Crazy_Arcade
 
             currentContext = BufferedGraphicsManager.Current;
             myBuffer = currentContext.Allocate( e.Graphics , this.DisplayRectangle);
+            ////////////////////////////////////////////////////////////////////////
+            //Draw
 
-            map.Show(myBuffer.Graphics);
+            map.Draw(myBuffer.Graphics);
             player.Draw(myBuffer.Graphics);
 
-            
+            //Draw
+            ////////////////////////////////////////////////////////////////////////
             myBuffer.Render();
             myBuffer.Dispose();
             
-            //e.Graphics.DrawImage(Properties.Resources.BazziDownIdle, new Point(500, 500) ) ;
-
         }
 
-       
 
-  
 
-        // 1초에 80번 깜빡인다.
-        int frame = 0;
+
+
+        const int deltaTime = 3;
         private void GameTimer_Tick(object sender, EventArgs e)
         {
 
-            //frame += 1;
-
-            //if ( frame >= 1000 )
-            //{
-            //    Invalidate();
-            //    player.Update(GameTimer.Interval);
-            //    //frame = 0;
-            //    MessageBox.Show($"{frame/1000} 초 ");
-            //}
-
             Refresh();
-            player.Update(3);
-
-
-
+            player.Update(deltaTime);
 
         }
 

@@ -46,20 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Managers\Animation.cs" />
-    <Compile Include="Managers\Boom.cs" />
-    <Compile Include="Managers\Charactor.cs" />
+    <Compile Include="Scripts\Charactor.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Managers\CollideManager.cs" />
-    <Compile Include="Managers\Manager.cs" />
-    <Compile Include="Managers\Map.cs" />
-    <Compile Include="Managers\MapManager.cs" />
-    <Compile Include="Managers\WaterBoom.cs" />
+    <Compile Include="Scripts\Managers\Manager.cs" />
+    <Compile Include="Scripts\Map.cs" />
+    <Compile Include="Scripts\WaterBoom.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -150,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Charactor\" />
+    <Folder Include="Scripts\Define\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AudioSource\Patrit.wav" />

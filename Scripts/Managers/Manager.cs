@@ -6,16 +6,10 @@ using System.Threading.Tasks;
 
 namespace Crazy_Arcade
 {
-
-    class MapManager
+    class Manager
     {
 
-
-
-
-
+        public static bool DrawCollider = true;
 
     }
-
-
 }

@@ -9,7 +9,7 @@ using Crazy_Arcade.Managers;
 
 
 
-enum Direction
+enum DIRECTION
 {
     LEFT = 0,
     UP,
@@ -24,29 +24,7 @@ namespace Crazy_Arcade
     class Charactor
     {
 
-        //INFO
-        MainForm form;
-        public Point position;
-        public Map map;
-
-        //Input
-        bool[] inputKeys = new bool[4];
-        
-        bool anyInput = false;
-        Direction playerDir = Direction.DOWN;
-        Rectangle dirRect;
-
-        
-        //Boom 
-        WaterBoom[] booms = new WaterBoom[100];
-        int boomIndex = 0;
-
-        //Charactor SPR
-        public Image[][] animations = new Image[4][];
-        public Image[] curAnim;
-        public int sprIndex = 0;
-        public int animDelay = 0;
-
+        #region SPRITE_ANIMS
         readonly Image[] left ={
             Properties.Resources.BazziLeftIdle,
             Properties.Resources.BazziLeftWalk_2,
@@ -75,23 +53,80 @@ namespace Crazy_Arcade
             Properties.Resources.BazziDownWalk_3,
             Properties.Resources.BazziDownWalk_4
         };
+        #endregion
+
+        //INFO
+        public Map map;
 
 
-      
-        public Charactor(MainForm form , Map map)
+        public Point position;
+
+        //Input
+        bool[] inputKeys  = new bool[4];
+        bool inputSpace   = false;
+        bool anyInput = false;
+        DIRECTION playerDir = DIRECTION.DOWN;
+        Rectangle dirRect;
+
+        
+        //Boom 
+        public WaterBoom[] booms = new WaterBoom[100];
+        int boomIndex = 0;
+
+        //Charactor SPR
+        public Image[][] animations = new Image[4][];
+        public Image[] curAnim;
+        public int sprIndex = 0;
+        public int animDelay = 0;
+
+
+
+        public Charactor( Map map)
         {
 
-            this.form   = form;
+            
             this.map    = map;
 
             curAnim     = down;
             dirRect     = new Rectangle();
             position    = new Point(40 * 12, 39 * 12 + 1);
 
-            animations[(int)Direction.LEFT]  = left;
-            animations[(int)Direction.UP]    = up;
-            animations[(int)Direction.RIGHT] = right;
-            animations[(int)Direction.DOWN]  = down;
+            animations[(int)DIRECTION.LEFT]  = left;
+            animations[(int)DIRECTION.UP]    = up;
+            animations[(int)DIRECTION.RIGHT] = right;
+            animations[(int)DIRECTION.DOWN]  = down;
+        }
+        public void Update(int deltaTime)
+        {
+            InputUpdate(deltaTime);
+            MoveUpdate(deltaTime);
+            AnimUpdate(deltaTime);
+        }
+
+        public void Draw(Graphics e)
+        {
+
+           //Draw Booms
+            for (int i = 0; i < 100; i++)
+            {
+                if (booms[i] == null)
+                    continue;
+                booms[i].Update(e, 2);
+            }
+
+            //Draw Charactor
+            int width = curAnim[sprIndex].Width;
+            int height = curAnim[sprIndex].Height;
+            e.DrawImage(curAnim[sprIndex] , position.X, position.Y -10 , width, height);
+
+            //Draw CharactorRect
+            if (Manager.DrawCollider )
+                e.DrawRectangle(new Pen(Color.Red,2), new Rectangle(position.X, position.Y + 15, 40, 38) );
+
+            //Draw dirRect
+            if(  Manager.DrawCollider )
+                e.DrawRectangle(new Pen(Color.Blue, 2), dirRect );
+
         }
 
         public void InputKeyDown(KeyEventArgs e)
@@ -102,47 +137,47 @@ namespace Crazy_Arcade
             {
 
                 case Keys.Left:
-                    playerDir = Direction.LEFT;
+                    playerDir = DIRECTION.LEFT;
                     inputKeys[(int)playerDir] = true;
                     break;
                 case Keys.Up:
-                    playerDir = Direction.UP;
+                    playerDir = DIRECTION.UP;
                     inputKeys[(int)playerDir] = true;
                     break;
                 case Keys.Right:
-                    playerDir = Direction.RIGHT;
+                    playerDir = DIRECTION.RIGHT;
                     inputKeys[(int)playerDir] = true;
                     break;
                 case Keys.Down:
-                    playerDir = Direction.DOWN;
+                    playerDir = DIRECTION.DOWN;
                     inputKeys[(int)playerDir] = true;
                     break;
             }
             
 
 
-            if ( Keys.Space == e.KeyCode )
+            if ( Keys.Space == e.KeyCode && inputSpace == false )
             {
-                WaterBoom boom = new WaterBoom(this);
-                boom.active = true;
-
-                double result = double.MaxValue;
-                Rectangle dest = new Rectangle();
-
+                inputSpace = true;
+                Rectangle[,] mapRects = map.Rects;
+                Rectangle destRect = new Rectangle();
                 Rectangle boomrect = new Rectangle(position.X, position.Y + 15, 46, 42);
-                Rectangle[,] Rects = map.Rects;
                 Point TilePos = new Point(0, 0);
 
-                for (int y = 0; y < Map.sizeY; y++)
-                {
-                    for (int x = 0; x < Map.sizeX; x++)
-                    {
-                        Rectangle rect = Rects[y, x];
-                        double TilepointX = rect.X + Map.blockInter / 2;
-                        double TilepointY = rect.Y + Map.blockInter / 2;
+                WaterBoom curBoom = new WaterBoom(this);
+                double result = double.MaxValue;
+                curBoom.active = true;
 
-                        double boompointX = boomrect.X + Map.blockInter / 2;
-                        double boompointY = boomrect.Y + Map.blockInter / 2;
+                for (int y = 0; y < Map.SIZEY; y++)
+                {
+                    for (int x = 0; x < Map.SIZEX; x++)
+                    {
+                        Rectangle rect = mapRects[y, x];
+                        double TilepointX = rect.X + Map.BLOCK_INTER / 2;
+                        double TilepointY = rect.Y + Map.BLOCK_INTER / 2;
+
+                        double boompointX = boomrect.X + Map.BLOCK_INTER / 2;
+                        double boompointY = boomrect.Y + Map.BLOCK_INTER / 2;
 
                         double distance = Math.Pow(TilepointX - boompointX, 2) + Math.Pow(TilepointY - boompointY, 2);
                         distance = Math.Sqrt(distance);
@@ -150,15 +185,16 @@ namespace Crazy_Arcade
                         if (distance < result)
                         {
                             result = distance;
-                            dest = rect;
+                            destRect = rect;
                             TilePos = new Point(x, y);
                         }
 
                     }
                 }
-                boom.rect = dest;
-                boom.tilePos = TilePos;
-                booms[boomIndex] = boom;
+
+                curBoom.rect = destRect;
+                curBoom.tilePos = TilePos;
+                booms[boomIndex] = curBoom;
                 ++boomIndex;
                 if (boomIndex > 99)
                     boomIndex = 0;
@@ -173,77 +209,27 @@ namespace Crazy_Arcade
             switch (e.KeyCode)
             {
                 case Keys.Left:
-                    inputKeys[(int)Direction.LEFT] = false;
+                    inputKeys[(int)DIRECTION.LEFT] = false;
                     break;
                 case Keys.Up:
-                    inputKeys[(int)Direction.UP]    = false;
+                    inputKeys[(int)DIRECTION.UP]    = false;
                     break;
                 case Keys.Right:
-                    inputKeys[(int)Direction.RIGHT] = false;
+                    inputKeys[(int)DIRECTION.RIGHT] = false;
                     break;
                 case Keys.Down:
-                    inputKeys[(int)Direction.DOWN] = false;
+                    inputKeys[(int)DIRECTION.DOWN] = false;
                     break;
             }
 
-        }
-
-        public void Draw(Graphics e)
-        {
-
-           
-            for (int i = 0; i < 100; i++)
-            {
-                if (booms[i] == null)
-                    continue;
-
-                booms[i].Update(e, 2);
-            }
-
-
-            //Draw Charactor
-            int width = curAnim[sprIndex].Width;
-            int height = curAnim[sprIndex].Height;
-            e.DrawImage(curAnim[sprIndex] , position.X, position.Y -10 , width, height);
-
-            //Draw CharactorRect
-            if (Manager.DrawCollider )
-                e.DrawRectangle(new Pen(Color.Red,2), new Rectangle(position.X, position.Y + 15, 40, 38) );
-            //Draw dirRect
-            if(  Manager.DrawCollider )
-                e.DrawRectangle(new Pen(Color.Blue, 2), dirRect );
-
-          
+            if ( e.KeyCode == Keys.Space )
+                inputSpace = false;
+            
 
         }
 
-        public void Update(int deltaTime)
+        public void AnimUpdate(int deltaTime)
         {
-
-            anyInput = false;
-            for (int i = 0; i < 4; i++)
-            {
-                if (inputKeys[i])
-                    anyInput = true;
-            }
-
-
-            InputUpdate(deltaTime);
-
-            MoveUpdate(deltaTime);
-            AnimationUpdate(deltaTime);
-
-
-
-        }
-
-
-        
-        public void AnimationUpdate(int deltaTime)
-        {
-
-            animDelay += deltaTime;
-            curAnim = animations[(int)playerDir];
 
             if (anyInput == false)
             {
@@ -251,7 +237,10 @@ namespace Crazy_Arcade
                 return;
             }
 
-            if (animDelay < 4)
+            animDelay += deltaTime;
+            curAnim = animations[(int)playerDir];
+
+            if (animDelay < 5)
                 return;
 
             animDelay = 0;
@@ -280,15 +269,15 @@ namespace Crazy_Arcade
 
 
             //Box 충돌 체크 
-            for (int y = 0; y < Map.sizeY; y++)
+            for (int y = 0; y < Map.SIZEY; y++)
             {
-                for (int x = 0; x < Map.sizeX; x++)
+                for (int x = 0; x < Map.SIZEX; x++)
                 {
 
                     if (map.iBlocks[y, x] == 0)
                         continue;
 
-                    if ( CollideCheck(dirRect, map.RectBlocks[y, x]) )
+                    if ( CollideCheck(dirRect, map.BlockCollides[y, x]) )
                         isCollide = true;  
                     
                 }
@@ -309,13 +298,15 @@ namespace Crazy_Arcade
 
             }
 
+            //물폭탄 터진 충돌 체크
+
 
             if (isCollide)
                 return;
 
             for (int i = 0; i < 4; i++)
             {
-                if (playerDir == (Direction)i && inputKeys[i])
+                if (playerDir == (DIRECTION)i && inputKeys[i])
                 {
                     position.X += tickMove * nx[i];
                     position.Y += tickMove * ny[i];
@@ -326,9 +317,14 @@ namespace Crazy_Arcade
           
         }
         
-        public void InputUpdate(int deltatime)
+        public void InputUpdate(int deltatime = 1)
         {
-
+            anyInput = false;
+            for (int i = 0; i < 4; i++)
+            {
+                if (inputKeys[i])
+                    anyInput = true;
+            }
         }
 
         public bool CollideCheck(Rectangle r1 , Rectangle r2 )

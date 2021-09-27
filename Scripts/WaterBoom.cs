@@ -110,11 +110,11 @@ namespace Crazy_Arcade.Managers
                 Rectangle pr = new Rectangle(ch.position.X, ch.position.Y + 15, 40, 40);
                 Rectangle br = rect;
 
-                double TilepointX = pr.X + Map.blockInter / 2;
-                double TilepointY = pr.Y + Map.blockInter / 2;
+                double TilepointX = pr.X + Map.BLOCK_INTER / 2;
+                double TilepointY = pr.Y + Map.BLOCK_INTER / 2;
 
-                double boompointX = br.X + Map.blockInter / 2;
-                double boompointY = br.Y + Map.blockInter / 2;
+                double boompointX = br.X + Map.BLOCK_INTER / 2;
+                double boompointY = br.Y + Map.BLOCK_INTER / 2;
 
                 double distance = Math.Pow(TilepointX - boompointX, 2) + Math.Pow(TilepointY - boompointY, 2);
                 distance = Math.Sqrt(distance);
@@ -268,11 +268,11 @@ namespace Crazy_Arcade.Managers
                 Rectangle pr = new Rectangle(ch.position.X, ch.position.Y + 15, 40, 40);
                 Rectangle br = rect;
 
-                double TilepointX = pr.X + Map.blockInter / 2;
-                double TilepointY = pr.Y + Map.blockInter / 2;
+                double TilepointX = pr.X + Map.BLOCK_INTER / 2;
+                double TilepointY = pr.Y + Map.BLOCK_INTER / 2;
 
-                double boompointX = br.X + Map.blockInter / 2;
-                double boompointY = br.Y + Map.blockInter / 2;
+                double boompointX = br.X + Map.BLOCK_INTER / 2;
+                double boompointY = br.Y + Map.BLOCK_INTER / 2;
 
                 double distance = Math.Pow(TilepointX - boompointX, 2) + Math.Pow(TilepointY - boompointY, 2);
                 distance = Math.Sqrt(distance);
